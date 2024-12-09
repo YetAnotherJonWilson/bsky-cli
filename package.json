@@ -1,0 +1,23 @@
+{
+  "name": "bsky-cli",
+  "version": "1.0.0",
+  "description": "A CLI tool for interacting with a Bluesky PDS",
+  "main": "script.js",
+  "type": "module",
+  "scripts": {
+    "start": "node script.js"
+  },
+  "keywords": [
+    "bluesky",
+    "pds",
+    "cli",
+    "atproto"
+  ],
+  "author": "Jon Wilson",
+  "license": "MIT",
+  "dependencies": {
+    "@atproto/api": "^0.13.19",
+    "dotenv": "^16.4.7"
+  }
+}
+
