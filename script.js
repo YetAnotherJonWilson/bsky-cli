@@ -1,13 +1,15 @@
-// Load environment variables from .env file
 import dotenv from 'dotenv';
 import { BskyAgent } from '@atproto/api';
 
 dotenv.config();
 
 async function main() {
+  const serviceUrl = process.env.BSKY_PDS_ENDPOINT || 'https://bsky.social';
+
   const agent = new BskyAgent({
-    service: 'https://bsky.social'
-  })
+    service: serviceUrl,
+  });
+
   await agent.login({
     identifier: process.env.BSKY_HANDLE,
     password: process.env.BSKY_PASSWORD,
@@ -17,8 +19,8 @@ async function main() {
     actor: process.env.BSKY_HANDLE,
   });
 
-  console.log(profile.data);
+  console.log(`Connected to: ${serviceUrl}`);
+  console.log('Profile Data:', profile.data);
 }
 
 main().catch(console.error);
-
