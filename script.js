@@ -1,6 +1,10 @@
 import readline from 'readline';
 import dotenv from 'dotenv';
 import { BskyAgent } from '@atproto/api';
+import { CarReader } from '@ipld/car';
+import pkg from 'cbor';
+
+const { decode } = pkg;
 
 dotenv.config();
 
@@ -14,6 +18,9 @@ function showAvailableCommands() {
   console.log('\nAvailable Commands:');
   console.log('- profile               → Show your profile information');
   console.log('- timeline              → Show your timeline feed');
+  console.log(
+    '- collections           →  Show all the collections in your PDS'
+  );
   console.log(
     '- list <collection>     → List records in a specific collection'
   );
@@ -60,6 +67,10 @@ function startInteractiveCLI() {
 
       case 'timeline':
         await getTimeline();
+        break;
+
+      case 'collections':
+        await getCollections();
         break;
 
       case 'list':
@@ -120,6 +131,40 @@ async function listRecords(collection) {
     }
   } catch (error) {
     console.error(`Error fetching records from ${collection}:`, error.message);
+  }
+}
+
+async function getCollections() {
+  try {
+    const repoData = await agent.api.com.atproto.sync.getRepo({
+      did: agent.session?.did,
+    });
+
+    const carReader = await CarReader.fromBytes(repoData.data);
+    const collections = new Set();
+
+    for await (const { cid, bytes } of carReader.blocks()) {
+      try {
+        // Decode the bytes into a record
+        const record = decode(bytes);
+
+        // Check if it's a valid AT Protocol record
+        if (record && typeof record === 'object' && record.$type) {
+          const collection = record.$type.split('/')[0];
+          collections.add(collection);
+        }
+      } catch (error) {
+        // Ignore non-JSON blocks
+      }
+    }
+
+    if (collections.size === 0) {
+      console.log('No collections found.');
+    } else {
+      console.log(`Collections found:\n${[...collections].join('\n')}`);
+    }
+  } catch (error) {
+    console.error('Error fetching collections:', error.message);
   }
 }
 

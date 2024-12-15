@@ -17,7 +17,8 @@
   "license": "MIT",
   "dependencies": {
     "@atproto/api": "^0.13.19",
+    "@ipld/car": "^5.3.3",
+    "cbor": "^10.0.3",
     "dotenv": "^16.4.7"
   }
 }
-
