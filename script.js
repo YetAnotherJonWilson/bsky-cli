@@ -63,14 +63,17 @@ function startInteractiveCLI() {
     switch (command) {
       case 'profile':
         await getProfile();
+        showAvailableCommands();
         break;
 
       case 'timeline':
         await getTimeline();
+        showAvailableCommands();
         break;
 
       case 'collections':
         await getCollections();
+        showAvailableCommands();
         break;
 
       case 'list':
@@ -80,6 +83,7 @@ function startInteractiveCLI() {
           const collection = args.join(' ');
           await listRecords(collection);
         }
+        showAvailableCommands();
         break;
 
       case 'exit':
