@@ -16,15 +16,11 @@ const agent = new BskyAgent({
 
 function showAvailableCommands() {
   console.log('\nAvailable Commands:');
-  console.log('- profile               → Show your profile information');
-  console.log('- timeline              → Show your timeline feed');
-  console.log(
-    '- collections           →  Show all the collections in your PDS'
-  );
-  console.log(
-    '- list <collection>     → List records in a specific collection'
-  );
-  console.log('- exit                  → Quit the program\n');
+  console.log('1. profile    → Show your profile information');
+  console.log('2. timeline   → Show your timeline feed');
+  console.log('3. collections → Show all the collections in your PDS');
+  console.log('4. list <collection> → List records in a specific collection');
+  console.log('5. exit       → Quit the program\n');
 }
 
 async function main() {
@@ -61,24 +57,24 @@ function startInteractiveCLI() {
     const [command, ...args] = line.trim().split(' ');
 
     switch (command) {
-      case 'profile':
+      case '1':
         await getProfile();
         showAvailableCommands();
         break;
 
-      case 'timeline':
+      case '2':
         await getTimeline();
         showAvailableCommands();
         break;
 
-      case 'collections':
+      case '3':
         await getCollections();
         showAvailableCommands();
         break;
 
-      case 'list':
+      case '4':
         if (args.length === 0) {
-          console.log('Please specify a collection. Usage: list <collection>');
+          console.log('Please specify a collection. Usage: 4 <collection>');
         } else {
           const collection = args.join(' ');
           await listRecords(collection);
@@ -86,7 +82,7 @@ function startInteractiveCLI() {
         showAvailableCommands();
         break;
 
-      case 'exit':
+      case '5':
         console.log('Goodbye!');
         rl.close();
         process.exit(0);
