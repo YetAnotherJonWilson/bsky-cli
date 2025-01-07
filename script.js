@@ -20,7 +20,14 @@ function showAvailableCommands() {
   console.log('2. timeline   → Show your timeline feed');
   console.log('3. collections → Show all the collections in your PDS');
   console.log('4. list <collection> → List records in a specific collection');
-  console.log('5. exit       → Quit the program\n');
+  console.log(
+    '5. keys <collection> → Display keys of all records in a collection'
+  );
+  console.log('6. exit       → Quit the program\n');
+}
+
+function toggleCommands() {
+  console.log('\n[Enter "c" to show commands]');
 }
 
 async function main() {
@@ -57,21 +64,29 @@ function startInteractiveCLI() {
     const [command, ...args] = line.trim().split(' ');
 
     switch (command) {
+      case 'c':
+        showAvailableCommands();
+        break;
+
+      case 'profile':
       case '1':
         await getProfile();
-        showAvailableCommands();
+        toggleCommands();
         break;
 
+      case 'timeline':
       case '2':
         await getTimeline();
-        showAvailableCommands();
+        toggleCommands();
         break;
 
+      case 'collections':
       case '3':
         await getCollections();
-        showAvailableCommands();
+        toggleCommands();
         break;
 
+      case 'list':
       case '4':
         if (args.length === 0) {
           console.log('Please specify a collection. Usage: 4 <collection>');
@@ -79,10 +94,24 @@ function startInteractiveCLI() {
           const collection = args.join(' ');
           await listRecords(collection);
         }
-        showAvailableCommands();
+        toggleCommands();
         break;
 
+      case 'keys':
       case '5':
+        if (args.length === 0) {
+          console.log('Please specify a collection. Usage: 5 <collection>');
+        } else {
+          const collection = args.join(' ');
+          await displayRecordKeys(collection);
+        }
+        toggleCommands();
+        break;
+
+      case 'exit':
+      case 'quit':
+      case 'e':
+      case '6':
         console.log('Goodbye!');
         rl.close();
         process.exit(0);
@@ -131,6 +160,29 @@ async function listRecords(collection) {
     }
   } catch (error) {
     console.error(`Error fetching records from ${collection}:`, error.message);
+  }
+}
+
+async function displayRecordKeys(collection) {
+  try {
+    const records = await agent.api.com.atproto.repo.listRecords({
+      repo: agent.session?.did,
+      collection,
+    });
+
+    if (records.data.records.length === 0) {
+      console.log(`No records found in ${collection}.`);
+    } else {
+      const keys = records.data.records.map((record) =>
+        record.uri.split('/').pop()
+      );
+      console.log(`\nRecord keys in ${collection}:`, keys);
+    }
+  } catch (error) {
+    console.error(
+      `Error fetching record keys from ${collection}:`,
+      error.message
+    );
   }
 }
 
